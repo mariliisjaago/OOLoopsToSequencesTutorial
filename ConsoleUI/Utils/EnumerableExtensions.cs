@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace ConsoleUI.Utils
 {
@@ -11,11 +11,13 @@ namespace ConsoleUI.Utils
             where T : class
             where TKey : IComparable<TKey>
         {
-            var output = sequence.Aggregate(
-                (T)null,
-                (best, cur) =>
-                best == null || criterion(cur).CompareTo(criterion(best)) < 0 ? cur : best
-                );
+            var output = sequence.Select(x => Tuple.Create(x, criterion(x)))
+                .Aggregate(
+                    (Tuple<T, TKey>)null,
+                    (best, cur) =>
+                    best == null || cur.Item2.CompareTo(best.Item2) < 0 ? cur : best
+                    )
+                .Item1;
 
             return output;
         }
