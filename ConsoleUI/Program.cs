@@ -1,6 +1,7 @@
 ﻿using PainterLibrary;
 using PainterLibrary.Collection;
 using PainterLibrary.Singles;
+using PainterLibrary.Special;
 using PainterLibrary.Utils;
 using System;
 using System.Collections.Generic;
@@ -30,11 +31,24 @@ namespace ConsoleUI
             //Console.WriteLine($"total cost: { groupOfPainters.EstimateCost(sqMeters) }");
             //Console.WriteLine($"total time in hrs: { groupOfPainters.EstimateTimeToPaint(sqMeters) }");
 
-            var collectionOfPainters = new Painters(painters);
+            //var collectionOfPainters = new Painters(painters);
 
-            var cheapest = FindCheapestOnCollection(sqMeters, collectionOfPainters);
+            //var cheapest = FindCheapestOnCollection(sqMeters, collectionOfPainters);
 
-            Console.WriteLine(cheapest.Name);
+            //Console.WriteLine(cheapest.Name);
+
+            var proportionalPainters = new List<ProportionalPainter>
+            {
+                new ProportionalPainter { DollarsPerHour = 10, TimePerSqMeter = TimeSpan.FromHours(4) },
+                new ProportionalPainter { DollarsPerHour = 5, TimePerSqMeter = TimeSpan.FromHours(6) },
+                new ProportionalPainter { DollarsPerHour = 3, TimePerSqMeter = TimeSpan.FromHours(8) },
+            };
+
+            var paintingGroup = new PaintingGroup(proportionalPainters);
+
+            Console.WriteLine($"cost: { paintingGroup.EstimateCost(sqMeters) }");
+            Console.WriteLine($"time: { paintingGroup.EstimateTimeToPaint(sqMeters).TotalHours }");
+
 
         }
 
@@ -55,23 +69,10 @@ namespace ConsoleUI
                 .WithMinimum(x => x.EstimateTimeToPaint(sqMeters));
         }
 
-        private static IPainter WorkTogether(double sqMeters, IEnumerable<IPainter> painters)
+        private static IPainter FindFastestOnCollection(double sqMeters, Painters painters)
         {
-            var sumOfTimeProportions = painters.Where(x => x.IsAvailable)
-                .Select(x => 1 / x.EstimateTimeToPaint(sqMeters).TotalHours)
-                .Sum();
-
-            TimeSpan time = TimeSpan.FromHours(1 / sumOfTimeProportions);
-
-            var cost = painters.Where(x => x.IsAvailable)
-                .Select(x => x.EstimateCost(sqMeters) / x.EstimateTimeToPaint(sqMeters).TotalHours * time.TotalHours)
-                .Sum();
-
-            return new ProportionalPainter()
-            {
-                TimePerSqMeter = TimeSpan.FromHours(time.TotalHours / sqMeters),
-                DollarsPerHour = cost / time.TotalHours
-            };
+            return painters.GetAvailable().GetFastestOne(sqMeters);
         }
+
     }
 }

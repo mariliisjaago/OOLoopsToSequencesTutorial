@@ -22,5 +22,10 @@ namespace PainterLibrary.Collection
         {
             return _painters.WithMinimum(x => x.EstimateCost(sqMeters));
         }
+
+        public IPainter GetFastestOne(double sqMeters)
+        {
+            return _painters.WithMinimum(x => x.EstimateTimeToPaint(sqMeters));
+        }
     }
 }
