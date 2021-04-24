@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PainterLibrary
+namespace PainterLibrary.Singles
 {
     public class MediumPainter : IPainter
     {
