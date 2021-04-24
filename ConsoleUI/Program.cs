@@ -1,4 +1,5 @@
-﻿using PainterLibrary;
+﻿using ConsoleUI.Utils;
+using PainterLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +19,15 @@ namespace ConsoleUI
 
             double sqMeters = 40;
 
-            var cheapest = FindCheapest(sqMeters, new List<IPainter>());
+            var cheapest = FindCheapest(sqMeters, painters);
 
-            
+            Console.WriteLine(cheapest.Name);
         }
 
         private static IPainter FindCheapest(double sqMeters, IEnumerable<IPainter> painters)
         {
             return painters.Where(x => x.IsAvailable)
-                .Aggregate((IPainter)null, (best, cur) =>
-                    cur.EstimateCost(sqMeters) < best.EstimateCost(sqMeters) ? cur : best
-                    );
-            
+                .WithMinimum(x => x.EstimateCost(sqMeters));
         }
     }
 }
