@@ -1,6 +1,7 @@
-﻿using ConsoleUI.Utils;
-using PainterLibrary;
+﻿using PainterLibrary;
+using PainterLibrary.Collection;
 using PainterLibrary.Singles;
+using PainterLibrary.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace ConsoleUI
             var painters = new List<IPainter>
             {
                 new SeniorPainter { Name = "Jason", IsAvailable = true },
-                new JuniorPainter { Name = "Julia", IsAvailable = true },
+                new JuniorPainter { Name = "Julia", IsAvailable = false },
                 new MediumPainter { Name = "Mark", IsAvailable = true }
             };
 
@@ -24,10 +25,16 @@ namespace ConsoleUI
 
             //Console.WriteLine(cheapest.Name);
 
-            var groupOfPainters = WorkTogether(sqMeters, painters);
+            //var groupOfPainters = WorkTogether(sqMeters, painters);
 
-            Console.WriteLine($"total cost: { groupOfPainters.EstimateCost(sqMeters) }");
-            Console.WriteLine($"total time in hrs: { groupOfPainters.EstimateTimeToPaint(sqMeters) }");
+            //Console.WriteLine($"total cost: { groupOfPainters.EstimateCost(sqMeters) }");
+            //Console.WriteLine($"total time in hrs: { groupOfPainters.EstimateTimeToPaint(sqMeters) }");
+
+            var collectionOfPainters = new Painters(painters);
+
+            var cheapest = FindCheapestOnCollection(sqMeters, collectionOfPainters);
+
+            Console.WriteLine(cheapest.Name);
 
         }
 
@@ -35,6 +42,11 @@ namespace ConsoleUI
         {
             return painters.Where(x => x.IsAvailable)
                 .WithMinimum(x => x.EstimateCost(sqMeters));
+        }
+
+        private static IPainter FindCheapestOnCollection(double sqMeters, Painters painters)
+        {
+            return painters.GetAvailable().GetCheapestOne(sqMeters);
         }
 
         private static IPainter FindFastest(double sqMeters, IEnumerable<IPainter> painters)
